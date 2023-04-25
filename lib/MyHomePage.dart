@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'Storage.dart';
-import 'dart:math';
 import 'package:untitled/ColloWidget.dart';
 
 
@@ -23,37 +22,49 @@ class MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+
     widget.storage.read().then((value) {
       setState(() {
         colli = value;
-        for(ColloWidget tmp in colli)
-          {
-            tmp.setCallback(() {
-              setState(() {
-                colli.remove(tmp);
-                save();
-              });
-            });
-          }
       });
+      for(ColloWidget tmp in colli)
+        addWidget(tmp);
     });
 
+  }
+
+  void addCollo(int id,String c)
+  {
+    if(id == 0 || c.isEmpty)
+      return;
+    for(ColloWidget w in colli)
+      {
+        if(w.ID == id)
+          return;
+      }
+    ColloWidget w = ColloWidget(ID: id,
+        Collo: c);
+    setState(() {
+      colli.add(w);
+    });
+    addWidget(w);
+    save();
+  }
+
+  void addWidget(ColloWidget c)
+  {
+    c.setCallback(() {
+      setState(() {
+        colli.remove(c);
+        save();
+      });
+    });
   }
 
   @override
   void save()
   {
-    widget.storage.clear();
-    Map<int,String> tmp = {};
-    for (ColloWidget w in colli)
-    {
-      tmp[w.ID] = w.Collo;
-    }
-    for(int id in tmp.keys) {
-      if(id == 0)
-        continue;
-      widget.storage.write(id, tmp[id]!);
-    }
+    widget.storage.write(colli);
   }
 
 
@@ -64,10 +75,9 @@ class MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: Column(
+        child: ListView(
           children: colli,
         ),
-
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () { showAlertDialog(this.context); },
@@ -79,9 +89,16 @@ class MyHomePageState extends State<MyHomePage> {
 
   showAlertDialog(BuildContext context) {
     // set up the button
+
+    TextEditingController idController = TextEditingController();
+    TextEditingController colloController = TextEditingController();
+
     Widget addButton = TextButton(
       child: Text("Aggiungi"),
       onPressed: () {
+        int id = int.parse(idController.text);
+        String collo = colloController.text;
+        addCollo(id, collo);
         Navigator.of(context).pop();
         },
     );
@@ -90,15 +107,18 @@ class MyHomePageState extends State<MyHomePage> {
       title: Text("Aggiungi un collo"),
       content: Column(
         children: [
-          new TextField(
+          // ignore: unnecessary_new
+          TextField(
           decoration: new InputDecoration(labelText: "Inserisci l'id"),
           keyboardType: TextInputType.number,
           inputFormatters: <TextInputFormatter>[
             FilteringTextInputFormatter.digitsOnly
           ],
+          controller: idController,
           ),
-          new TextField(
-            decoration: new InputDecoration(labelText: "Inserisci il collo")
+          TextField(
+            decoration: new InputDecoration(labelText: "Inserisci il collo"),
+            controller: colloController
             ,)
         ]
       ),

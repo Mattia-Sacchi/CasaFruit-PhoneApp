@@ -22,13 +22,13 @@ class ColloWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(children: [
-      Text('ID: $ID'),
-      Text('  Nome: $Collo'),
-      MaterialButton(onPressed: callback,
-          child: const Text('Remove',textScaleFactor: 1.33,),
-          textColor: Colors.white,
-          color: Colors.deepOrange,),
-
+      Text('$ID:  '),
+      Text('$Collo'),
+      Expanded(child: Align(alignment: Alignment.centerRight,
+      child: IconButton(onPressed: callback,
+        icon: Icon(Icons.remove),
+        color: Colors.deepOrange,),),)
+      ,
     ],);
     throw UnimplementedError();
   }
