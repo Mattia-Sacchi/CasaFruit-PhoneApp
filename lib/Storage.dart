@@ -2,12 +2,11 @@ import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:io';
-import 'package:untitled/ColloWidget.dart';
-
-import 'package:untitled/ColloWidget.dart';
+import 'package:casa_fruit/ColloWidget.dart';
 
 class Storage {
 
+  String _path = "";
 
   Future<String> get _localPath async {
     final directory = await getApplicationDocumentsDirectory();
@@ -16,7 +15,12 @@ class Storage {
 
   Future<File> get _localFile async {
     final path = await _localPath;
-    return File('$path/objects.txt');
+    _path = '$path/objects.txt';
+    return File(_path);
+  }
+
+  String get localFilePath {
+    return _path;
   }
 
   Future<File> write(List<ColloWidget> lst) async {

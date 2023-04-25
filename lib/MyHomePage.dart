@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'Storage.dart';
-import 'package:untitled/ColloWidget.dart';
-
+import 'package:casa_fruit/ColloWidget.dart';
+import 'package:share_plus/share_plus.dart';
+import 'dart:async';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key? key, required this.title,required this.storage});
@@ -79,11 +80,28 @@ class MyHomePageState extends State<MyHomePage> {
           children: colli,
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () { showAlertDialog(this.context); },
-        tooltip: 'Settings',
-        child: const Icon(Icons.add),
-      ),
+      persistentFooterButtons: [
+        IconButton(
+          onPressed: () async {
+            await Share.shareXFiles(
+                [XFile(widget.storage.localFilePath)],
+            text: "Ciao mondo");
+
+          },
+          tooltip: 'Share',
+          icon: Icon(Icons.share),
+          color: Colors.blue,),
+        IconButton(
+          onPressed: () { showAlertDialog(this.context); },
+          tooltip: 'Add',
+          icon: Icon(Icons.add),
+          color: Colors.blue,),
+        IconButton(
+          onPressed: () {  },
+          tooltip: 'Get File',
+          icon: Icon(Icons.add),
+          color: Colors.blue,),
+      ],
     );
   }
 
