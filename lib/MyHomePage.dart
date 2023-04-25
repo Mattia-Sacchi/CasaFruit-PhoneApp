@@ -77,9 +77,12 @@ class MyHomePageState extends State<MyHomePage> {
 
   void reload()
   {
+    if(searchBar.text.isNotEmpty)
+      searchBar.text = "";
     setState(() {
       colliVisibili = colli;
     });
+
   }
 
   void addWidget(ColloWidget c)
@@ -146,6 +149,7 @@ void textChanged(String text)
               iconColor: Colors.white,
               ),
             onChanged: textChanged,
+            controller: searchBar,
             style: TextStyle(color: Colors.white),
 
           )
