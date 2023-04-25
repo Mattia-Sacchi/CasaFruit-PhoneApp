@@ -19,6 +19,18 @@ class Storage {
     return File(_path);
   }
 
+  Future<List<ColloWidget>> load(String path) async
+  {
+    try {
+      final file = await File(path);
+      return readFile(file);
+    }
+    catch (e) {
+      // If encountering an error, return 0
+      return [];
+    }
+  }
+
   String get localFilePath {
     return _path;
   }
@@ -33,11 +45,13 @@ class Storage {
     }
     return file.writeAsString(temp.toString());
   }
-
   Future<List<ColloWidget>> read() async {
-    try {
-      final file = await _localFile;
+    File file = await _localFile;
+    return readFile(file);
+  }
 
+  Future<List<ColloWidget>> readFile(File file) async {
+    try {
       // Read the file
       String contents = await file.readAsString();
       List<ColloWidget> colli = [];

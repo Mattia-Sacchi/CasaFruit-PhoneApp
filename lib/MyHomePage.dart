@@ -20,19 +20,28 @@ class MyHomePage extends StatefulWidget {
 class MyHomePageState extends State<MyHomePage> {
 
   List<ColloWidget> colli = [];
+  List<ColloWidget> colliVisibili = [];
+  TextEditingController searchBar = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     getPermission();
     widget.storage.read().then((value) {
+      load(value);
+    });
+
+
+  }
+
+  void load(List<ColloWidget> lst)
+  {
       setState(() {
-        colli = value;
+        colli = lst;
       });
       for(ColloWidget tmp in colli)
         addWidget(tmp);
-    });
-
+      colliVisibili = colli;
   }
 
   Future<PermissionStatus> getPermission() async
@@ -62,15 +71,23 @@ class MyHomePageState extends State<MyHomePage> {
     });
     addWidget(w);
     save();
+    reload();
 
   }
 
+  void reload()
+  {
+    setState(() {
+      colliVisibili = colli;
+    });
+  }
 
   void addWidget(ColloWidget c)
   {
     c.setCallback(() {
       setState(() {
         colli.remove(c);
+        reload();
         save();
       });
     });
@@ -90,22 +107,59 @@ class MyHomePageState extends State<MyHomePage> {
     if(result != null && result.files.single.path != null)
       {
         PlatformFile file = result.files.first;
-        print(file.name);
+
+        widget.storage.load(file.path.toString()).then((value)
+        {
+          load(value);
+        });
+        save();
+
       }
   }
+void textChanged(String text)
+{
+  if(text.isEmpty) {
+    reload();
+    return;
+  }
+  colliVisibili = [];
+  setState(() {
+  for(ColloWidget w in colli)
+    {
+      if(w.Collo.contains(text))
+        colliVisibili.add(w);
+    }
+  });
 
+}
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+
+        title: Column( children: [
+          TextField(
+            decoration: new InputDecoration(
+              labelText: "Cerca",
+              icon: Icon(Icons.search),
+              iconColor: Colors.white,
+              ),
+            onChanged: textChanged,
+            style: TextStyle(color: Colors.white),
+
+          )
+        ]),
+
+
       ),
+
       body: Center(
         child: ListView(
-          children: colli,
+          children: colliVisibili,
         ),
       ),
+
       persistentFooterButtons: [
         IconButton(
           onPressed: () async {
