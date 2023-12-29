@@ -1,16 +1,6 @@
 # casa_fruit
 
-A new Flutter project.
+A Flutter Project
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+The purpose od this app is to help my father in is job in witch he has to memorize a lot numbers and the relative object.
+This repository is public with the only purpose of tutorial for me and other,
