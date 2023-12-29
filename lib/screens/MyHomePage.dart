@@ -26,6 +26,8 @@ class MyHomePageState extends State<MyHomePage> {
   TextEditingController dialogController = TextEditingController();
   List<ColloTile> colli = [];
   int dialogId = 100;
+  bool numberSearch = false;
+  Color buttonColor = Colors.blue;
 
   MyHomePageState() {
     manager = DatabaseManager();
@@ -35,6 +37,8 @@ class MyHomePageState extends State<MyHomePage> {
 
   void reload() async {
     await manager.open();
+    searchBar.text = '';
+    colli.clear();
     List<Collo> objects = await manager.getColli();
     objects.forEach((element) {
       setState(() {
@@ -50,10 +54,43 @@ class MyHomePageState extends State<MyHomePage> {
     reload();
   }
 
-  void searchByName(String value) {}
+  void searchByName(String value) {
+    if(value.isEmpty)
+      {
+        reload();
+        return;
+      }
+    setState(() {
+      if(numberSearch)
+        {
+          colli.removeWhere((element)
+          {
+            int val = int.parse(value);
+            return element.obj.uid != val;
+          });
+        }
+      else
+        {
+          colli.removeWhere((element) => !element.obj.name.toLowerCase().contains(value.toLowerCase()));
+        }
+    });
+
+  }
 
   void search() {
     searchByName(searchBar.text);
+  }
+
+  void onDeletePressed()
+  {
+    setState(() {
+      colli.removeWhere((element) {
+        if(element.selected)
+          manager.delete(element.obj.uid);
+        return element.selected;
+      });
+    });
+    reload();
   }
 
   void onImportPressed()
@@ -99,18 +136,20 @@ class MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.search),
-          onPressed: search,
+          icon: Icon(Icons.close),
+          color: Colors.black,
+          onPressed: () => searchByName(''),
         ),
         title: TextField(
           decoration: new InputDecoration(
             labelText: "Cerca",
             icon: Icon(Icons.search),
-            iconColor: Colors.white,
+            iconColor: Colors.black,
+
           ),
           onChanged: searchByName,
           controller: searchBar,
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(color: Colors.black),
         ),
       ),
       body: ListView.builder(
@@ -120,21 +159,24 @@ class MyHomePageState extends State<MyHomePage> {
           }),
       persistentFooterButtons: [
         IconButton(
+          onPressed: () {
+            numberSearch = !numberSearch;
+            setState(() {
+              buttonColor = numberSearch ? Colors.orange: Colors.blue;
+            });
+          },
+          tooltip: 'NumberSearch',
+          icon: Icon(Icons.numbers),
+          color: buttonColor,
+        ),
+        IconButton(
           onPressed: _showMyDialog,
           tooltip: 'Add',
           icon: Icon(Icons.add),
           color: Colors.blue,
         ),
         IconButton(
-          onPressed: () {
-            setState(() {
-              colli.removeWhere((element) {
-                if(element.selected)
-                  manager.delete(element.obj.uid);
-                return element.selected;
-              });
-            });
-          },
+          onPressed: onDeletePressed,
           tooltip: 'Delete',
           icon: Icon(Icons.delete),
           color: Colors.blue,
@@ -164,6 +206,7 @@ class MyHomePageState extends State<MyHomePage> {
 
     });
     manager.insert(c);
+    reload();
   }
 
   void _showDialog(String name, int id)
