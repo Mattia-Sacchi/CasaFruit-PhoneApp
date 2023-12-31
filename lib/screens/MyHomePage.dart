@@ -7,7 +7,6 @@ import 'package:flutter/services.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:share_plus/share_plus.dart';
 import 'dart:async';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:casa_fruit/objects/database.dart';
 
 import '../objects/collo.dart';
@@ -28,12 +27,7 @@ class MyHomePageState extends State<MyHomePage> {
   int dialogId = 100;
   bool numberSearch = false;
   Color buttonColor = Colors.blue;
-
-  MyHomePageState() {
-    manager = DatabaseManager();
-  }
-
-  late DatabaseManager manager;
+  DatabaseManager manager = DatabaseManager();
 
   void reload() async {
     await manager.open();
@@ -75,10 +69,6 @@ class MyHomePageState extends State<MyHomePage> {
         }
     });
 
-  }
-
-  void search() {
-    searchByName(searchBar.text);
   }
 
   void onDeletePressed()
@@ -203,7 +193,6 @@ class MyHomePageState extends State<MyHomePage> {
     Collo c = Collo(uid: dialogId, name: dialogController.text);
     setState(() {
       colli.add(ColloTile(obj: c,callback: () {_showDialog(c.name, c.uid); }));
-
     });
     manager.insert(c);
     reload();
